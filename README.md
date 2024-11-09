@@ -99,6 +99,25 @@ fflush_errno (void)
 }
 ```
 
+## Is buffering controlled by C or Linux pipes?
+
+- This project includes a demonstration program, write_number, which outputs
+  data using the write function rather than fwrite. By comparing the behavior of
+  write_number with output_numbers, which uses fwrite, we illustrate that the
+  buffering mechanism is a characteristic of C's fwrite rather than a feature of
+  the Linux system.
+- When executed with write, output occurs immediately without buffering delays,
+  confirming that Linux pipes are not responsible for buffering behavior.
+
+```bash
+./write_number > output.txt
+./write_number
+```
+
+- By running write_number, you will see immediate output in contrast to the
+  buffered behavior of fwrite, further validating that C's standard library
+  controls buffering, not the Linux environment itself.
+
 ## ISO/IEC 9899:2024 - Programming Languages
 
 - The behavior of output functions in C, including fwrite, is influenced by the
