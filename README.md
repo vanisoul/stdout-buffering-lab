@@ -98,3 +98,23 @@ fflush_errno (void)
     stdout_errno = errno;
 }
 ```
+
+## ISO/IEC 9899:2024 - Programming Languages
+
+- The behavior of output functions in C, including fwrite, is influenced by the
+  stream's buffering mode, as defined in the ISO/IEC 9899:2024 standard.
+  According to section 7.23.3, this standard specifies:
+  - This section outlines the fundamental rules for output operations in C,
+    explaining how buffering modes—unbuffered, fully buffered, and line
+    buffered—determine when characters are transmitted to or from the host
+    environment. These specifications form the underlying framework for all C
+    output functions, meaning that the behavior of functions like fwrite,
+    printf, and other output functions aligns with this structure.
+  - Tools like stdbuf can dynamically modify the buffering behavior of standard
+    streams, thereby impacting the behavior of these functions. By adjusting the
+    buffering mode, stdbuf influences when data is actually written, conforming
+    to the specifications outlined in the standard.
+
+- ISO/IEC 9899:2024 - Information technology — Programming languages — C
+  - https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf
+  - https://www.iso.org/standard/82075.html
