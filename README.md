@@ -1,48 +1,97 @@
-﻿# 建立一個 c 測試 fwrite 測試其預設行為
+﻿# BufferBehaviorTest
 
-### 預設 標準輸出 為行緩衝
+This project demonstrates and tests the default buffering behavior of `fwrite`
+in C, as well as command-line buffering management using `stdbuf` and `grep` in
+various contexts.
 
-- ./output_numbers
+## Overview
 
-### 預設 檔案輸出 為 N 大小緩衝
+The project provides examples of:
 
-- ./output_numbers > output.txt
+- Testing default buffering behavior for standard output and file output using
+  `fwrite`.
+- Manipulating buffering behavior with `stdbuf` for both standard output and
+  file output.
+- Applying these buffering behaviors in practical command-line usage, including
+  with `grep` and its `--line-buffered` option.
 
-### 透過 stdbuf 指令 影響 fwrite 預設輸出
+## Structure
 
-- stdbuf -o 4096 ./output_numbers
+- **`output_numbers.c`**: A C program that outputs numbers from 1 to 50, with a
+  delay of 0.1 seconds between each output using `fwrite`.
+- **`number.sh`**: A shell script that outputs numbers from 1 to 50 with `echo`,
+  marking even numbers with `###`, and includes a delay of 0.1 seconds.
 
-# 實際應用至 grep 指令
+## Usage
 
-### 輸出標準輸出 所以是行緩衝
+### Testing `fwrite` Default Buffering
 
-- ./number.sh | grep "###"
+1. **Standard Output** Default behavior: line-buffered output for standard
+   output.
 
-### 一樣透過 stdbuf 可改變其緩衝大小
-
-- ./number.sh | stdbuf -o 4096 grep "###"
-
-### 同樣輸出至檔案 預期為 N 大小緩衝 依然可以透過 stdbuf 設定非常小的緩衝
-
-- ./number.sh | stdbuf -o 1 grep "###" > output.txt
-
-# 另外說明一下 grep --line-buffered 參數
-
-### git clone https://git.savannah.gnu.org/git/grep.git
-
---line-buffered 參數與上述緩衝架構的設定完全無關
-實際上就是在原始碼中根據如果有此參數就強制 fflush
-
-- L1350
-
+```bash
+./output_numbers
 ```
+
+2. **File Output** Default behavior: N-sized buffering for file output.
+
+```bash
+./output_numbers > output.txt
+```
+
+3. **Using `stdbuf` to Modify Buffering** Use `stdbuf` to change the default
+   buffering behavior, specifying the buffer size.
+
+```bash
+stdbuf -o 4096 ./output_numbers
+```
+
+### Applying Buffering Behavior to `grep`
+
+1. **Standard Output with `number.sh`** When using `grep` to filter output,
+   standard output is line-buffered by default.
+
+```bash
+./number.sh | grep "###"
+```
+
+2. **Modifying Buffer Size with `stdbuf`** `stdbuf` can modify `grep`'s buffer
+   size.
+
+```bash
+./number.sh | stdbuf -o 4096 grep "###"
+```
+
+3. **File Output with Modified Buffer Size** Direct output to a file with a very
+   small buffer size using `stdbuf`.
+
+```bash
+./number.sh | stdbuf -o 1 grep "###" > output.txt
+```
+
+### Explanation of `grep --line-buffered` Option
+
+To illustrate the `--line-buffered` option with `grep`, clone the GNU `grep`
+repository and inspect the relevant code sections.
+
+- `git clone https://git.savannah.gnu.org/git/grep.git`
+
+The `--line-buffered` option does not modify the underlying buffer structure;
+instead, it directly forces a `fflush()` after each line if the option is
+enabled.
+
+Relevant code sections:
+
+- Line 1350:
+
+```c
 if (line_buffered)
   fflush_errno ();
 ```
 
-- L478
+- Line 478:
 
-```
+```c
 fflush_errno (void)
 {
   if (fflush (stdout) != 0)
